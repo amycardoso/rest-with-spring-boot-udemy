@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: Amélia Alice
+Build-Jdk: 12
+Implementation-Title: rest-with-spring-boot-udemy
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: br.com.amycardoso
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/rest-with-spring-boot-udemy
+Created-By: Maven Integration for Eclipse
+
