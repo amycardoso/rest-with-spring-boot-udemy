@@ -1,0 +1,44 @@
+sudo: required
+dist: bionic
+language: java
+jdk:
+  - oraclejdk11
+python:
+  - "3.6"
+services: docker
+before_install:
+  - sudo apt-get update
+  - cd 19\ RestWithSpringBootUdemy\ CI\ na\ AWS\ com\ o\ Travis\ CI/RestWithSpringBootUdemy/
+  - echo "Let's start Maven Package!"
+  - mvn clean package
+  - cd ..
+  - echo "We are in the Docker folder!!!"
+script:
+  - echo "OK Here we GO!"
+  - docker-compose build
+before_deploy:
+  - echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+deploy:
+  provider: script
+  script:
+    docker tag rest-with-spring-boot-udemy:latest leandrocgsi/rest-with-spring-boot-udemy:$TRAVIS_JOB_ID;
+    docker push leandrocgsi/rest-with-spring-boot-udemy:$TRAVIS_JOB_ID;
+  on:
+    branch: master
+after_success:
+  - sudo apt-get -y install python3-pip python-dev
+  - sudo pip3 install -U setuptools
+  - sudo pip3 install -U virtualenvwrapper
+  - python3 -V
+  - pip3 -V
+  - pip3 uninstall wheel
+  - pip3 install wheel
+  - pip3 install awscli --upgrade --user
+  - export PATH=$PATH:$HOME/.local/bin
+  - eval $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+  - docker tag rest-with-spring-boot-udemy:latest $IMAGE_REPO_URL:$TRAVIS_JOB_ID
+  - docker push $IMAGE_REPO_URL:$TRAVIS_JOB_ID
+  # - aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME  --force-new-deployment
+  - aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME
+notifications:
+  email: false
